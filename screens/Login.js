@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import axios from 'axios'
 
 // formik
 import { Formik } from 'formik';
@@ -33,7 +34,7 @@ const { darkLight, brand, primary } = Colors;
 // icon
 // import { Octicons, Fontisto, Ionicons } from '@expo/vector-icons';
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
 
   return (
@@ -47,7 +48,17 @@ const Login = () => {
         <Formik
           initialValues={{ email: '', password: '' }}
           onSubmit={(values) => {
-            console.log(values);
+              const { email, password } = values
+              try {
+                axios.post("https://api.pote.dev/auth/login", {email, password})
+                .then(res => {
+                    console.log(res.data);
+                    if(res)
+                        navigation.navigate('Profil')
+                })
+              } catch (error) {
+                  console.log(error);
+              }
           }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -82,7 +93,7 @@ const Login = () => {
               <ExtraView>
                 <ExtraText>Don't have an account already? </ExtraText>
                 <TextLink>
-                  <TextLinkContent>Signup</TextLinkContent>
+                  <TextLinkContent onPress={() => navigation.navigate('Signup')}>Signup</TextLinkContent>
                 </TextLink>
               </ExtraView>
             </StyledFormArea>
@@ -101,15 +112,14 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       </LeftIcon>
       <StyledInputLabel>{label}</StyledInputLabel>
       <StyledTextInput {...props} />
-      {isPassword && (
+      {/* {isPassword && (
         <RightIcon
           onPress={() => {
             setHidePassword(!hidePassword);
           }}
         >
-          {/* <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} /> */}
         </RightIcon>
-      )}
+      )} */}
     </View>
   );
 };
