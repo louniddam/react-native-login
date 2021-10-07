@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios'
+import  AsyncStorage from '@react-native-async-storage/async-storage';
 
 // formik
 import { Formik } from 'formik';
@@ -35,7 +36,29 @@ const { darkLight, brand, primary } = Colors;
 // import { Octicons, Fontisto, Ionicons } from '@expo/vector-icons';
 
 const Login = ({ navigation }) => {
+
   const [hidePassword, setHidePassword] = useState(true);
+
+  const _storeData = async (token) => {
+    try {
+      await AsyncStorage.setItem(
+        "token", token
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const _getStoreData = async () => {
+      try {
+        const value = await  AsyncStorage.getItem('token')
+        if(value !== null)
+            // console.log("xsrf token from storage:",value);
+            navigation.navigate('Profil')
+      } catch (error) {
+      console.log(error);
+      }
+  }
 
   return (
     <StyledContainer>
@@ -53,8 +76,12 @@ const Login = ({ navigation }) => {
                 axios.post("https://api.pote.dev/auth/login", {email, password})
                 .then(res => {
                     console.log(res.data);
-                    if(res)
-                        navigation.navigate('Profil')
+                    _storeData(res.data.xsrfToken)
+                    try {
+                        _getStoreData()
+                    } catch (error) {
+                        console.log(error);
+                    }
                 })
               } catch (error) {
                   console.log(error);
@@ -94,6 +121,12 @@ const Login = ({ navigation }) => {
                 <ExtraText>Don't have an account already? </ExtraText>
                 <TextLink>
                   <TextLinkContent onPress={() => navigation.navigate('Signup')}>Signup</TextLinkContent>
+                </TextLink>
+              </ExtraView>
+              <ExtraView>
+                <ExtraText>You forgot your password?</ExtraText>
+                <TextLink>
+                  <TextLinkContent onPress={() => navigation.navigate('ForgottenPassword')}>Forgotten password</TextLinkContent>
                 </TextLink>
               </ExtraView>
             </StyledFormArea>
