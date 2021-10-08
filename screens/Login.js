@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import axios from 'axios'
-import  AsyncStorage from '@react-native-async-storage/async-storage';
+import { _getStoreData, _storeData } from '../utils/localStorage';
+import { addToken } from '../utils/api'
+import api from '../utils/api'
 
 // formik
 import { Formik } from 'formik';
@@ -39,27 +40,6 @@ const Login = ({ navigation }) => {
 
   const [hidePassword, setHidePassword] = useState(true);
 
-  const _storeData = async (token) => {
-    try {
-      await AsyncStorage.setItem(
-        "token", token
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const _getStoreData = async () => {
-      try {
-        const value = await  AsyncStorage.getItem('token')
-        if(value !== null)
-            // console.log("xsrf token from storage:",value);
-            navigation.navigate('Profil')
-      } catch (error) {
-      console.log(error);
-      }
-  }
-
   return (
     <StyledContainer>
       <StatusBar style="dark" />
@@ -70,20 +50,19 @@ const Login = ({ navigation }) => {
 
         <Formik
           initialValues={{ email: '', password: '' }}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
               const { email, password } = values
               try {
-                axios.post("https://api.pote.dev/auth/login", {email, password})
-                .then(res => {
-                    console.log(res.data);
-                    _storeData(res.data.xsrfToken)
-                    try {
-                        _getStoreData()
-                    } catch (error) {
-                        console.log(error);
-                    }
-                })
-              } catch (error) {
+                const login = await api.post("auth/login", {email, password})
+                   await _storeData("xsrfToken", login.data.xsrfToken)
+                   await  _storeData("accessToken", login.data.accessToken)
+                   await _storeData("refreshToken", login.data.refreshToken)
+                   await addToken()
+                    const userInfos = await api.get("auth/me")
+                    console.log(userInfos.data);
+                    await _storeData("userInfos", userInfos.data)
+                    navigation.navigate('Profil')
+                } catch (error) {
                   console.log(error);
               }
           }}

@@ -184,3 +184,10 @@ export const TextLinkContent = styled.Text`
   color: ${brand};
   font-size: 15px;
 `;
+
+export const ColumnContainer = styled.View`
+justify-content: center;
+flex-direction: column;
+align-items: center;
+padding: 10px;
+`
