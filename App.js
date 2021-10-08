@@ -8,6 +8,7 @@ import Signup from "./screens/Signup"
 import Profil from "./screens/Profil"
 import ForgottenPassword from './screens/ForgottenPassword';
 import Home from './screens/Home';
+import SearchUser from './screens/SearchUser';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +41,7 @@ export default function App() {
               <Stack.Screen name="ForgottenPassword" component={ForgottenPassword} options={{ title: 'ForgottenPassword' }} />
               <Stack.Screen name="Profil" component={Profil}  />
               <Stack.Screen name="Home" component={Home}  />
+              <Stack.Screen name="SearchUser" component={SearchUser}  />
             </React.Fragment>
             )
             :

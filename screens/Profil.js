@@ -43,6 +43,7 @@ const Profil = ({ navigation }) => {
             <ExtraView>
                 <TextLink>
                   <TextLinkContent onPress={() => navigation.navigate('Home')}>Home</TextLinkContent>
+                  <TextLinkContent onPress={() => navigation.navigate('SearchUser')}>Search a User</TextLinkContent>
                 </TextLink>
             </ExtraView>
         </StyledContainer>

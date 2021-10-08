@@ -53,9 +53,16 @@ const Home = ({ navigation }) => {
             const userEmail = await _getStoreData("userInfos")
             const tokens = await api.post("auth/token", { "refresh_token": refreshToken, "email": userEmail.email })
             console.log(tokens.data);
-            //restock les token
-            //recall
-            //if fail navigate
+            try {
+              await _storeData("xsrfToken", tokens.data.xsrfToken)
+              await  _storeData("accessToken", tokens.data.accessToken)
+              await _storeData("refreshToken", tokens.data.refreshToken)
+              await addToken()
+              const users = await api.get("/users")
+              setUsers(users.data)
+            } catch (error) {
+              navigation.navigate("Login")
+            }
         }
     }
   }
@@ -88,6 +95,12 @@ const Home = ({ navigation }) => {
             )
           })
       }
+          <ExtraView>
+              <TextLink>
+                <TextLinkContent onPress={() => navigation.navigate('Profil')}>Profil</TextLinkContent>
+                <TextLinkContent onPress={() => navigation.navigate('SearchUser')}>Search a User</TextLinkContent>
+              </TextLink>
+          </ExtraView>
       </ColumnContainer>
     </StyledContainer>
   );
